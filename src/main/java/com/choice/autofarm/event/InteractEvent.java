@@ -6,7 +6,7 @@ import com.choice.autofarm.entity.minion.EntityMinion;
 import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.entity.player.EntityPlayer;
 import com.choice.autofarm.util.MinionConstants;
-import com.choice.autofarm.util.SkullItem;
+import com.choice.autofarm.util.EntityMinionNBT;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -33,10 +33,10 @@ public class InteractEvent implements Listener {
 
         Location placeLocation = event.getClickedBlock().getLocation();
 
-        MinionType minionType = SkullItem.getEntityMinionType(Material.PLAYER_HEAD, event.getItem()).orElse(MinionType.NULL);
+        MinionType minionType = EntityMinionNBT.getType(Material.PLAYER_HEAD, event.getItem()).orElse(MinionType.NULL);
         if (minionType == MinionType.NULL) return;
 
-        String entityUuid = SkullItem.getEntityMinionInfo(Material.PLAYER_HEAD, event.getItem(), MinionConstants.ENTITY_MINION_UUID).orElse("");
+        String entityUuid = EntityMinionNBT.getStringInfo(Material.PLAYER_HEAD, event.getItem(), MinionConstants.ENTITY_MINION_UUID).orElse("");
         event.setCancelled(true);
         player.getInventory().removeItem(event.getItem());
         Main.getArmorStandManager().spawnMinion(player, placeLocation, entityUuid, minionType);
@@ -50,11 +50,11 @@ public class InteractEvent implements Listener {
 
         if(!(event.getRightClicked() instanceof ArmorStand)) return;
         ArmorStand entity = (ArmorStand) event.getRightClicked();
-        MinionType minionType = SkullItem.getEntityMinionType(Material.DIAMOND_PICKAXE, entity.getItemInHand()).orElse(MinionType.NULL);
+        MinionType minionType = EntityMinionNBT.getType(Material.DIAMOND_PICKAXE, entity.getItemInHand()).orElse(MinionType.NULL);
 
         if(minionType == MinionType.NULL) return;
 
-        String minionUuid = SkullItem.getEntityMinionInfo(Material.DIAMOND_PICKAXE, entity.getItemInHand(), MinionConstants.ENTITY_MINION_UUID).orElse("");
+        String minionUuid = EntityMinionNBT.getStringInfo(Material.DIAMOND_PICKAXE, entity.getItemInHand(), MinionConstants.ENTITY_MINION_UUID).orElse("");
         EntityMinion minion = Main.getArmorStandManager().getEntityMinionByUuid(player.getPlayer().getUniqueId(), minionUuid);
 
         if(minionType == MinionType.STONE){
@@ -72,13 +72,13 @@ public class InteractEvent implements Listener {
 
         EntityPlayer player = new EntityPlayer((Player) event.getDamager());
         ArmorStand entity = (ArmorStand) event.getEntity();
-        MinionType minionType = SkullItem.getEntityMinionType(Material.DIAMOND_PICKAXE, entity.getItemInHand()).orElse(MinionType.NULL);
+        MinionType minionType = EntityMinionNBT.getType(Material.DIAMOND_PICKAXE, entity.getItemInHand()).orElse(MinionType.NULL);
 
         if(minionType == MinionType.NULL) return;
 
         event.setCancelled(true);
-        String minionName = SkullItem.getMinionEntityName(entity).orElse("");
-        String minionUuid = SkullItem.getEntityMinionInfo(Material.DIAMOND_PICKAXE, entity.getItemInHand(), MinionConstants.ENTITY_MINION_UUID).orElse("");
+        String minionName = EntityMinionNBT.getMinionEntityName(entity).orElse("");
+        String minionUuid = EntityMinionNBT.getStringInfo(Material.DIAMOND_PICKAXE, entity.getItemInHand(), MinionConstants.ENTITY_MINION_UUID).orElse("");
         EntityMinion minion = Main.getArmorStandManager().getEntityMinionByUuid(player.getPlayer().getUniqueId(), minionUuid);
 
         if(minionType == MinionType.STONE){

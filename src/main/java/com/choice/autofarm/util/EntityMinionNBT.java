@@ -9,9 +9,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;
 
-public class SkullItem {
+public class EntityMinionNBT {
 
-    public static Optional<MinionType> getEntityMinionType(Material material, ItemStack item) {
+    public static Optional<MinionType> getType(Material material, ItemStack item) {
         return Optional.ofNullable(item)
                 .filter(i -> i.getType() == material)
                 .map(NBTItem::new)
@@ -19,17 +19,18 @@ public class SkullItem {
                 .map(MinionType::valueOf);
     }
 
-    public static Optional<String> getEntityMinionInfo(Material material, ItemStack item, String info) {
+    public static Optional<String> getStringInfo(Material material, ItemStack item, String info) {
         return Optional.ofNullable(item)
                 .filter(i -> i.getType() == material)
                 .map(NBTItem::new)
                 .map(nbtItem -> nbtItem.getString(info));
     }
 
-    public static Optional<String> getMinionEntityName(ArmorStand item) {
+    public static Optional<String> getMinionEntityName(ItemStack item) {
         return Optional.ofNullable(item)
-                .map(NBTEntity::new)
-                .map(nbtItem -> nbtItem.getString(MinionConstants.ENTITY_MINION_NAME));
+                .filter(i -> i.getType() == Material.PLAYER_HEAD)
+                .map(NBTItem::new)
+                .map(nbtItem -> nbtItem.getCompound("SkullOwner").getString("Name"));
     }
 
 

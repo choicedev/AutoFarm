@@ -1,0 +1,5 @@
+name: AutoFarm
+version: '${version}'
+main: com.choice.autofarm.Main
+api-version: 1.13
+depend: [NBTAPI, ProtocolLib]

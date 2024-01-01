@@ -17,6 +17,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.mineacademy.fo.MinecraftVersion;
 
 public class InteractEvent implements Listener {
 
@@ -77,7 +78,7 @@ public class InteractEvent implements Listener {
         if(minionType == MinionType.NULL) return;
 
         event.setCancelled(true);
-        String minionName = EntityMinionNBT.getMinionEntityName(entity).orElse("");
+        String minionName = EntityMinionNBT.getMinionEntityName(entity.getItemInHand()).orElse("");
         String minionUuid = EntityMinionNBT.getStringInfo(Material.DIAMOND_PICKAXE, entity.getItemInHand(), MinionConstants.ENTITY_MINION_UUID).orElse("");
         EntityMinion minion = Main.getArmorStandManager().getEntityMinionByUuid(player.getPlayer().getUniqueId(), minionUuid);
 

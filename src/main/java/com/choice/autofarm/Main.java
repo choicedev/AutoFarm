@@ -10,18 +10,18 @@ import com.choice.autofarm.manager.armorstand.IMinionManager;
 import com.choice.autofarm.util.throwable.InstanceNotFound;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mineacademy.fo.plugin.SimplePlugin;
 
-public final class Main extends JavaPlugin {
+public final class Main extends SimplePlugin {
 
 
-    private static JavaPlugin instance;
+    private static Main instance;
     private static MinionManager minionManager;
     private static BukkitAudiences audiences;
 
     @Override
-    public void onEnable() {
-
-        instance = this;
+    protected void onPluginStart() {
+        instance = (Main) SimplePlugin.getInstance();
         audiences = BukkitAudiences.create(this);
         minionManager = new IMinionManager();
         new EventManager().registerEvents(new InteractEvent());
@@ -31,17 +31,9 @@ public final class Main extends JavaPlugin {
         manager.registerCommand(new FarmCommand());
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-
-    }
-
-
-
 
     //Object
-    public static JavaPlugin getInstance() {
+    public static Main getInstance() {
         try{
             if(instance == null){
                 throw new InstanceNotFound();

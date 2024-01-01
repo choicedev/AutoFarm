@@ -28,8 +28,8 @@ public class MinionHologram {
         hologram = DHAPI.createHologram(HOLOGRAM_NAME, location.add(0, 2, 0), lines);
     }
 
-    public void updateName(int blockAmount, Location location){
-        List<String> lines = Arrays.asList(minionName, ""+blockAmount);
+    public void updateName(String blockAmount, Location location){
+        List<String> lines = Arrays.asList(minionName, blockAmount);
         DHAPI.setHologramLines(hologram, lines);
         DHAPI.moveHologram(hologram, location.add(0, 2, 0));
     }

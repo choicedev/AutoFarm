@@ -1,11 +1,8 @@
 package com.choice.autofarm.manager.armorstand;
 
 import com.choice.autofarm.entity.EntityArmorStand;
-import com.choice.autofarm.entity.minion.EntityStoneMinion;
 import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.entity.minion.EntityMinion;
-import com.choice.autofarm.factory.MinionFactory;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -55,6 +52,7 @@ public class IMinionManager implements MinionManager {
             }
             EntityArmorStand armorStand = new EntityArmorStand(placeLocation, minion);
             armorStand.createEntityArmorStand();
+            armorStand.setPlayerLocation(player.getLocation());
             armorStand.rotationBody(player.getLocation());
             armorStand.startLookingBlocks();
             addArmorStandsToPlayer(player.getUniqueId(), armorStand);
@@ -74,7 +72,7 @@ public class IMinionManager implements MinionManager {
                 .ifPresent(entityArmorStand -> {
                      deleteMinion(player.getUniqueId(), entityUuid);
                      entityArmorStand.cancelAnimateRightArm();
-                    entityArmorStand.stopLookingBlocks(entityUuid);
+                    entityArmorStand.removeMinion(entityUuid);
                     giveHeadToPlayer(player, minionType);
                 });
 

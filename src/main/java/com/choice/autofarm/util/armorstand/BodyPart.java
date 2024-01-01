@@ -9,8 +9,9 @@ import static com.choice.autofarm.util.armorstand.BodyPart.Parts.*;
 
 public class BodyPart {
     private Parts parts;
+
     public enum Parts {
-        HEAD, BODY, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG;
+        HEAD, BODY, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG
     }
 
     public BodyPart(Parts parts){
@@ -70,9 +71,14 @@ public class BodyPart {
     }
 
     private MiningAnimation animation;
-    public void animateLeftArmAsync(ArmorStand stand) {
+    public void animateRightArmAsync(ArmorStand stand) {
        animation = new MiningAnimation(stand, 8);
        animation.startAnimation();
+    }
+
+    public void animateLeftArmAsync(ArmorStand stand) {
+        animation = new MiningAnimation(stand, 20);
+        animation.startAnimation();
     }
 
     public void cancelAnimation(ArmorStand stand) {

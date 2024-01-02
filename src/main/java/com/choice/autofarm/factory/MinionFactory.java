@@ -1,5 +1,6 @@
 package com.choice.autofarm.factory;
 
+import com.choice.autofarm.entity.minion.EntityWheatMinion;
 import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.entity.minion.EntityMinion;
 import com.choice.autofarm.entity.minion.EntityStoneMinion;
@@ -13,7 +14,9 @@ public class MinionFactory {
             case STONE -> {
                 return new EntityStoneMinion(uuid);
             }
-            case WHEAT -> {}
+            case WHEAT -> {
+                return new EntityWheatMinion(uuid);
+            }
         }
 
         return null;

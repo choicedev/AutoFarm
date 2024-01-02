@@ -1,15 +1,16 @@
 package com.choice.autofarm.event;
 
-import com.choice.autofarm.Main;
-import com.choice.autofarm.builder.ItemStackBuilder;
+import com.choice.autofarm.AutoFarm;
 import com.choice.autofarm.entity.minion.EntityMinion;
 import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.entity.player.EntityPlayer;
-import com.choice.autofarm.util.MinionConstants;
+import com.choice.autofarm.manager.armorstand.MinionManager;
 import com.choice.autofarm.util.EntityMinionNBT;
+import com.choice.autofarm.util.FarmConstants;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,80 +18,80 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.mineacademy.fo.MinecraftVersion;
+import org.bukkit.inventory.ItemStack;
+import org.mineacademy.fo.menu.model.ItemCreator;
+import org.mineacademy.fo.remain.CompMaterial;
+
+import java.util.UUID;
 
 public class InteractEvent implements Listener {
-
+    MinionManager manager = AutoFarm.getArmorStandManager();
 
     @EventHandler
-    public void onInteractWithAmorStand(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        if (event.getClickedBlock() == null) return;
-        if (!event.hasItem()) return;
-        if (!event.hasBlock()) return;
-        if (event.getItem().getType() != Material.PLAYER_HEAD) return;
-        if (event.getClickedBlock().getType() == Material.AIR) return;
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+    public void onInteractWithArmorStand(PlayerInteractEvent event) {
+        if (!isValidInteraction(event)) return;
 
+        EntityPlayer player = new EntityPlayer(event.getPlayer());
         Location placeLocation = event.getClickedBlock().getLocation();
-
-        MinionType minionType = EntityMinionNBT.getType(Material.PLAYER_HEAD, event.getItem()).orElse(MinionType.NULL);
+        MinionType minionType = EntityMinionNBT.getType(event.getItem(), CompMaterial.PLAYER_HEAD);
         if (minionType == MinionType.NULL) return;
 
-        String entityUuid = EntityMinionNBT.getStringInfo(Material.PLAYER_HEAD, event.getItem(), MinionConstants.ENTITY_MINION_UUID).orElse("");
         event.setCancelled(true);
-        player.getInventory().removeItem(event.getItem());
-        Main.getArmorStandManager().spawnMinion(player, placeLocation, entityUuid, minionType);
-    }
+        removePlayerItem(player, event.getItem());
 
+        manager.spawnMinion(player, placeLocation, getMinionUuid(event.getItem()), minionType);
+    }
 
     @EventHandler
     public void onInteractRemoveEntity(PlayerInteractAtEntityEvent event) {
+        if (!isValidArmorStandEntity(event.getRightClicked())) return;
         EntityPlayer player = new EntityPlayer(event.getPlayer());
 
-
-        if(!(event.getRightClicked() instanceof ArmorStand)) return;
         ArmorStand entity = (ArmorStand) event.getRightClicked();
-        MinionType minionType = EntityMinionNBT.getType(Material.DIAMOND_PICKAXE, entity.getItemInHand()).orElse(MinionType.NULL);
+        String entityUUID = EntityMinionNBT.getMinionUUID(entity.getItemInHand());
+        EntityMinion minion = manager.getEntityMinionByUUID(player.getUniqueId(), entityUUID);
+        if (minion == null) return;
 
-        if(minionType == MinionType.NULL) return;
-
-        String minionUuid = EntityMinionNBT.getStringInfo(Material.DIAMOND_PICKAXE, entity.getItemInHand(), MinionConstants.ENTITY_MINION_UUID).orElse("");
-        EntityMinion minion = Main.getArmorStandManager().getEntityMinionByUuid(player.getPlayer().getUniqueId(), minionUuid);
-
-        if(minionType == MinionType.STONE){
-            player.getPlayer().getInventory().addItem(new ItemStackBuilder(Material.COBBLESTONE).setAmount(minion.getAmount()).build());
-        }
-        minion.setAmount(0);
         event.setCancelled(true);
-
+        removeMinionItems(player, minion);
     }
 
     @EventHandler
-    public void onAttackMinion(EntityDamageByEntityEvent event){
-        if(!(event.getDamager() instanceof  Player)) return;
-        if(!(event.getEntity() instanceof ArmorStand)) return;
+    public void onAttackMinion(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof ArmorStand)) return;
 
         EntityPlayer player = new EntityPlayer((Player) event.getDamager());
         ArmorStand entity = (ArmorStand) event.getEntity();
-        MinionType minionType = EntityMinionNBT.getType(Material.DIAMOND_PICKAXE, entity.getItemInHand()).orElse(MinionType.NULL);
-
-        if(minionType == MinionType.NULL) return;
-
+        String entityUUID = EntityMinionNBT.getMinionUUID(entity.getItemInHand());
+        EntityMinion minion = manager.getEntityMinionByUUID(player.getUniqueId(), entityUUID);
+        if (minion == null) return;
         event.setCancelled(true);
-        String minionName = EntityMinionNBT.getMinionEntityName(entity.getItemInHand()).orElse("");
-        String minionUuid = EntityMinionNBT.getStringInfo(Material.DIAMOND_PICKAXE, entity.getItemInHand(), MinionConstants.ENTITY_MINION_UUID).orElse("");
-        EntityMinion minion = Main.getArmorStandManager().getEntityMinionByUuid(player.getPlayer().getUniqueId(), minionUuid);
+        if(minion.getOwner() != player.getUniqueId()) return;
 
-        if(minionType == MinionType.STONE){
-            player.getPlayer().getInventory().addItem(new ItemStackBuilder(Material.COBBLESTONE).setAmount(minion.getAmount()).build());
-        }
+        removeMinionItems(player, minion);
         entity.remove();
-        Main.getArmorStandManager().deleteArmor(player.getPlayer(), minionUuid, minionType);
-        player.sendMessage("<gold><farm> removed from world", map -> {
-            map.put("farm", minionName);
-        });
+        manager.deleteArmor(player, minion);
+
     }
 
+    private boolean isValidInteraction(PlayerInteractEvent event) {
+        return event.getClickedBlock() != null && event.hasItem() && event.hasBlock() && event.getItem().getType() == Material.PLAYER_HEAD && event.getClickedBlock().getType() != Material.AIR && event.getAction() == Action.RIGHT_CLICK_BLOCK;
+    }
 
+    private String getMinionUuid(ItemStack item) {
+        return EntityMinionNBT.getStringInfo(CompMaterial.DIAMOND_PICKAXE, item, FarmConstants.ENTITY_MINION_UUID);
+    }
+
+    private boolean isValidArmorStandEntity(Entity entity) {
+        return entity instanceof ArmorStand;
+    }
+
+    private void removeMinionItems(EntityPlayer player, EntityMinion minion) {
+        player.addItemsOrDrop(ItemCreator.of(minion.blockFarm()).amount(minion.getAmount()).make());
+        minion.setAmount(0);
+    }
+
+    private void removePlayerItem(EntityPlayer player, ItemStack item) {
+        player.removeItemInventory(item);
+    }
 }

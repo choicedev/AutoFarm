@@ -2,8 +2,8 @@ package com.choice.autofarm.manager.armorstand;
 
 import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.entity.minion.EntityMinion;
+import com.choice.autofarm.entity.player.EntityPlayer;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,13 +17,13 @@ public interface MinionManager {
 
     boolean minionClickedIsFromPlayer(UUID uuid);
 
-    void spawnMinion(Player player, Location placeLocation, String entityUuid, MinionType minionType);
+    void spawnMinion(EntityPlayer player, Location placeLocation, String entityUuid, MinionType minionType);
 
-    void deleteArmor(Player player, String entityUuid, MinionType minionType);
+    void giveHeadToPlayer(EntityPlayer player, MinionType minionType);
 
-    void giveHeadToPlayer(Player player, MinionType minionType);
+    List<EntityMinion> getListEntityMinionByUUID(UUID uuid);
 
-    List<EntityMinion> getEntityMinionByUUID(UUID uuid);
+    EntityMinion getEntityMinionByUUID(UUID uuid, String entityUuid);
 
-    EntityMinion getEntityMinionByUuid(UUID uuid, String entityUuid);
+    void deleteArmor(EntityPlayer entityPlayer, EntityMinion minion);
 }

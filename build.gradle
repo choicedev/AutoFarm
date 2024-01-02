@@ -49,6 +49,8 @@ dependencies {
         transitive = false
     }
     compileOnly "com.github.decentsoftware-eu:decentholograms:2.8.6"
+    implementation "org.projectlombok:lombok:1.18.22"
+    annotationProcessor "org.projectlombok:lombok:1.18.22"
 
 }
 

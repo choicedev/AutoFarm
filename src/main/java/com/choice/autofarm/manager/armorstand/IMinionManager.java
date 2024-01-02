@@ -3,8 +3,8 @@ package com.choice.autofarm.manager.armorstand;
 import com.choice.autofarm.entity.EntityArmorStand;
 import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.entity.minion.EntityMinion;
+import com.choice.autofarm.entity.player.EntityPlayer;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import java.util.*;
 
@@ -40,65 +40,61 @@ public class IMinionManager implements MinionManager {
     }
 
     @Override
-    public void spawnMinion(Player player, Location placeLocation, String entityUuid, MinionType minionType) {
+    public void spawnMinion(EntityPlayer player, Location placeLocation, String entityUuid, MinionType minionType) {
 
-        try {
-            EntityMinion minion;
-            if(getEntityMinionByUuid(player.getUniqueId(), entityUuid) == null) {
-                minion = createEntityMinion(player.getUniqueId(), minionType);
-                addMinionToPlayer(player.getUniqueId(), minion);
-            }else {
-                minion = getEntityMinionByUuid(player.getUniqueId(), entityUuid);
-            }
-            EntityArmorStand armorStand = new EntityArmorStand(placeLocation, minion);
-            armorStand.createEntityArmorStand();
-            armorStand.setPlayerLocation(player.getLocation());
-            armorStand.rotationBody(player.getLocation());
-            armorStand.startLookingBlocks();
-            addArmorStandsToPlayer(player.getUniqueId(), armorStand);
-        } catch (Exception e) {
-            e.printStackTrace();
-            giveHeadToPlayer(player, minionType);
+        EntityMinion minion;
+        if(getEntityMinionByUUID(player.getUniqueId(), entityUuid) == null) {
+            minion = createEntityMinion(player.getUniqueId(), minionType);
+            addMinionToPlayer(player.getUniqueId(), minion);
+        }else {
+            minion = getEntityMinionByUUID(player.getUniqueId(), entityUuid);
         }
+        EntityArmorStand armorStand = new EntityArmorStand(placeLocation, minion);
+        armorStand.createEntityArmorStand();
+        armorStand.setPlayerLocation(player.getLocation());
+        armorStand.rotationBody(player.getLocation());
+        armorStand.startLookingBlocks();
+        addArmorStandsToPlayer(player.getUniqueId(), armorStand);
 
     }
 
     @Override
-    public void deleteArmor(Player player, String entityUuid, MinionType minionType) {
+    public void deleteArmor(EntityPlayer player, EntityMinion minion) {
         entityArmorStandsMap.getOrDefault(player.getUniqueId(), Collections.emptyList())
                 .stream()
-                .filter(filter -> filter.getMinionUUID().equals(entityUuid))
+                .filter(filter -> filter.getMinionUUID().equals(minion.getUUID()))
                 .findFirst()
                 .ifPresent(entityArmorStand -> {
-                     deleteMinion(player.getUniqueId(), entityUuid);
+                     removeMinionFromList(player.getUniqueId(), minion.getUUID());
                      entityArmorStand.cancelAnimateRightArm();
-                    entityArmorStand.removeMinion(entityUuid);
-                    giveHeadToPlayer(player, minionType);
+                    entityArmorStand.stopRunnable(minion.getUUID());
+                    giveHeadToPlayer(player, minion.getMinionType());
+                    player.sendMessage("<gold><farm> removed from world", map -> map.put("farm", minion.getDisplayName()));
                 });
 
     }
 
     @Override
-    public void giveHeadToPlayer(Player player, MinionType minionType) {
+    public void giveHeadToPlayer(EntityPlayer player, MinionType minionType) {
         EntityMinion minion = createEntityMinion(player.getUniqueId(), minionType);
         addMinionToPlayer(player.getUniqueId(), minion);
-        player.getInventory().addItem(minion.getHead());
+        player.addItemsOrDrop(minion.getHead());
     }
 
-    private void deleteMinion(UUID uuid, String entityUuid) {
-        List<EntityMinion> entityMinions = getEntityMinionByUUID(uuid);
-        entityMinions.removeIf(map -> map.getUUID().toString().equals(entityUuid));
+    private void removeMinionFromList(UUID uuid, UUID entityUuid) {
+        List<EntityMinion> entityMinions = getListEntityMinionByUUID(uuid);
+        entityMinions.removeIf(map -> map.getUUID().equals(entityUuid));
         entityArmorStandsMap.get(uuid).removeIf(map -> map.getMinionUUID().equals(entityUuid));
     }
 
     @Override
-    public List<EntityMinion> getEntityMinionByUUID(UUID uuid) {
+    public List<EntityMinion> getListEntityMinionByUUID(UUID uuid) {
         return entityMinionsMap.getOrDefault(uuid, new ArrayList<>());
     }
 
     @Override
-    public EntityMinion getEntityMinionByUuid(UUID uuid, String entityUuid) {
-        return getEntityMinionByUUID(uuid)
+    public EntityMinion getEntityMinionByUUID(UUID uuid, String entityUuid) {
+        return getListEntityMinionByUUID(uuid)
                 .stream()
                 .filter(minion -> minion.getUUID().toString().equals(entityUuid))
                 .findFirst()

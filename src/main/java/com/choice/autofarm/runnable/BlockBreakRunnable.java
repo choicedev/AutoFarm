@@ -1,18 +1,18 @@
 package com.choice.autofarm.runnable;
 
+import com.choice.autofarm.AutoFarm;
 import com.choice.autofarm.block_packet.BlockPositionPacket;
 import com.choice.autofarm.entity.EntityArmorStand;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.entity.Ageable;
+import org.mineacademy.fo.model.SimpleRunnable;
+import org.mineacademy.fo.remain.CompMaterial;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockBreakRunnable extends BukkitRunnable {
+public class BlockBreakRunnable extends SimpleRunnable {
 
     private static final int MAX_BLOCK_STATUS = 10;
     private static final int DISTANCE = 2;
@@ -21,35 +21,29 @@ public class BlockBreakRunnable extends BukkitRunnable {
     private int blockStatus = 0;
     private Block blockFocused;
     private final EntityArmorStand entityArmorStand;
-    private final BlockPlacementTimer placementTimer;
     private final BlockPositionPacket packet;
 
     private int breakTimer = 0;
-
     public boolean isActive = false;
 
     public BlockBreakRunnable(EntityArmorStand entityArmorStand) {
         this.entityArmorStand = entityArmorStand;
         this.packet = new BlockPositionPacket();
-        this.placementTimer = new BlockPlacementTimer(entityArmorStand);
     }
 
-    @NotNull
-    @Override
-    public synchronized BukkitTask runTaskTimer(@NotNull Plugin plugin, long delay, long period) throws IllegalArgumentException, IllegalStateException {
-        this.isActive = true;
-        return super.runTaskTimer(plugin, delay, period);
+    public void runLookingBlocks() {
+        isActive = true;
+        runTaskTimer(AutoFarm.getInstance(), 4, 10L);
+    }
+
+    public void stopLookingBlocks() {
+        isActive = false;
+        cancel();
     }
 
     @Override
     public void run() {
         executeLookingBlocks();
-    }
-
-    @Override
-    public synchronized void cancel() throws IllegalStateException {
-        isActive = false;
-        super.cancel();
     }
 
     private void clean() {
@@ -61,69 +55,77 @@ public class BlockBreakRunnable extends BukkitRunnable {
     }
 
     public void stopRunnable() {
-        cancel();
+        stopLookingBlocks();
         clean();
     }
 
     private void executeLookingBlocks() {
         Location location = entityArmorStand.getLocation();
-
-        entityArmorStand.updateName(""+entityArmorStand.getAmount());
-
+        entityArmorStand.updateName(String.valueOf(entityArmorStand.getAmount()));
 
         if (blockFocused != null) {
-            if (!isValidBlock()) {
-                clean();
-                return;
-            }
+            handleBlockFocus();
+        } else {
+            handleNoBlockFocus(location);
+        }
+    }
 
-            entityArmorStand.rotationBody(blockFocused.getLocation().add(0, 0.1, 0));
-            entityArmorStand.rotationHead(blockFocused.getLocation().add(0, 0.1, 0));
-
-            if (blockStatus == MAX_BLOCK_STATUS) {
-                collectAndClean();
-            } else {
-                sendBlockPacket();
-                blockStatus++;
-            }
+    private void handleBlockFocus() {
+        if (!isValidBlock()) {
+            clean();
             return;
         }
 
+        entityArmorStand.rotateToBlock(blockFocused.getLocation().add(0, 0.1, 0));
+
+        if (blockStatus == MAX_BLOCK_STATUS) {
+            collectAndClean();
+        } else {
+            sendBlockPacket();
+            blockStatus++;
+        }
+    }
+
+    private void handleNoBlockFocus(Location location) {
         int y = location.getBlockY() - 1;
         Block block = getRandomBlock(location, y);
+
         if (areLocationsEqual(block.getLocation(), location)) {
             breakTimer = 0;
             return;
         }
 
-        if (!isValidBlockType(block.getType())) {
-            breakTimer++;
-            entityArmorStand.updateName("Breaking timer " + breakTimer);
-            Location standLocation = entityArmorStand.getPlayerSpawnLocation();
-            entityArmorStand.rotationHead(standLocation);
-            entityArmorStand.rotationBody(standLocation);
-            if(breakTimer == BREAK_INTERVAL_SECONDS){
-                entityArmorStand.updateName("Adding block");
-                entityArmorStand.stopLookingBlocks();
-                entityArmorStand.startPlaceBlocks();
-            }
-            return;
+        if (!isValidBlockType(block)) {
+            handleInvalidBlockType();
+        } else {
+            breakTimer = 0;
+            blockFocused = block;
+            entityArmorStand.animateRightArm();
         }
-        breakTimer = 0;
-        blockFocused = block;
-        entityArmorStand.animateRightArm();
     }
 
+    private void handleInvalidBlockType() {
+        breakTimer++;
+        entityArmorStand.updateName("Breaking timer " + breakTimer);
+        Location standLocation = entityArmorStand.getPlayerSpawnLocation();
+        entityArmorStand.rotateToBlock(standLocation);
+
+        if (breakTimer == BREAK_INTERVAL_SECONDS) {
+            entityArmorStand.updateName("Adding block");
+            entityArmorStand.stopLookingBlocks();
+            entityArmorStand.startPlaceBlocks();
+        }
+    }
 
     private Block getRandomBlock(Location location, int y) {
         int randomX = location.getBlockX() - DISTANCE + ThreadLocalRandom.current().nextInt(2 * DISTANCE + 1);
+        int randomY = location.getBlockY() - DISTANCE + ThreadLocalRandom.current().nextInt(DISTANCE + 1);
         int randomZ = location.getBlockZ() - DISTANCE + ThreadLocalRandom.current().nextInt(2 * DISTANCE + 1);
-        return location.getWorld().getBlockAt(randomX, y, randomZ);
+        return location.getWorld().getBlockAt(randomX, randomY, randomZ);
     }
 
     private boolean isValidBlock() {
-        return blockFocused.getType().isSolid() &&
-                (blockFocused.getType() == Material.STONE || blockFocused.getType() == Material.COBBLESTONE);
+        return entityArmorStand.isValidBlock(blockFocused);
     }
 
     private void collectAndClean() {
@@ -133,13 +135,14 @@ public class BlockBreakRunnable extends BukkitRunnable {
     }
 
     private void sendBlockPacket() {
-        if (blockFocused == null) return;
-        packet.sendPacket(blockFocused.getLocation(), blockStatus);
+        if (blockFocused != null) {
+            packet.sendPacket(blockFocused.getLocation(), blockStatus);
+        }
     }
 
-    private boolean isValidBlockType(Material type) {
+    private boolean isValidBlockType(Block block) {
         entityArmorStand.cancelAnimateRightArm();
-        return type == Material.STONE || type == Material.COBBLESTONE;
+        return entityArmorStand.isValidBlock(block);
     }
 
     private boolean areLocationsEqual(Location loc1, Location loc2) {

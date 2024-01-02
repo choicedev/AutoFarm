@@ -1,6 +1,6 @@
 package com.choice.autofarm.util.armorstand;
 
-import com.choice.autofarm.Main;
+import com.choice.autofarm.AutoFarm;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
@@ -29,7 +29,7 @@ public class MiningAnimation extends BukkitRunnable {
     }
 
     public void startAnimation() {
-        runTaskTimer(Main.getInstance(), 0L, 1L);
+        runTaskTimer(AutoFarm.getInstance(), 0L, 1L);
     }
 
     @Override

@@ -7,15 +7,15 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.mineacademy.fo.remain.CompMaterial;
 
 public class ProjectileEvent implements Listener {
 
     @EventHandler
     public void onEvent(ProjectileHitEvent event){
-        if(!(event.getHitEntity() instanceof ArmorStand)) return;
-        ArmorStand stand = (ArmorStand) event.getHitEntity();
+        if(!(event.getHitEntity() instanceof ArmorStand stand)) return;
 
-        MinionType minion = EntityMinionNBT.getType(Material.DIAMOND_PICKAXE, stand.getItemInHand()).orElse(MinionType.NULL);
+        MinionType minion = EntityMinionNBT.getType(stand.getItemInHand(), CompMaterial.DIAMOND_PICKAXE);
         if(minion == MinionType.NULL) return;
         event.setCancelled(true);
     }

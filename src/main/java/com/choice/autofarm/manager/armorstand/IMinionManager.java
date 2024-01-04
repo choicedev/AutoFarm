@@ -44,10 +44,10 @@ public class IMinionManager implements MinionManager {
     public void spawnMinion(EntityPlayer player, Location placeLocation, String entityUuid, MinionType minionType) {
 
         EntityMinion minion;
-        if(getEntityMinionByUUID(player.getUniqueId(), entityUuid) == null) {
+        if (getEntityMinionByUUID(player.getUniqueId(), entityUuid) == null) {
             minion = createEntityMinion(player.getUniqueId(), minionType);
             addMinionToPlayer(player.getUniqueId(), minion);
-        }else {
+        } else {
             minion = getEntityMinionByUUID(player.getUniqueId(), entityUuid);
         }
         EntityArmorStand armorStand = new EntityArmorStand(placeLocation, minion);
@@ -66,15 +66,22 @@ public class IMinionManager implements MinionManager {
                 .filter(filter -> filter.getMinionUUID().equals(minion.getUUID()))
                 .findFirst()
                 .ifPresent(entityArmorStand -> {
-                     removeMinionFromList(player.getUniqueId(), minion.getUUID());
-                     entityArmorStand.cancelAnimateRightArm();
+                    entityArmorStand.cancelAnimateRightArm();
                     entityArmorStand.stopRunnable(minion.getUUID());
+                    entityArmorStand.deleteMinionWorld();
                     giveHeadToPlayer(player, minion.getMinionType());
-                    player.addItemsOrDrop(ItemCreator.of(minion.blockFarm()).amount(minion.getAmount()).make());
+                    removeMinionFromList(player.getUniqueId(), minion.getUUID());
                     minion.setAmount(0);
                     player.sendMessage("<gold><farm> removed from world", map -> map.put("farm", minion.getDisplayName()));
                 });
 
+    }
+
+
+    @Override
+    public void getItemFromMinion(EntityPlayer player, EntityMinion minion){
+        player.addItemsOrDrop(ItemCreator.of(minion.blockFarm()).amount(minion.getAmount()).make());
+        minion.setAmount(0);
     }
 
     @Override

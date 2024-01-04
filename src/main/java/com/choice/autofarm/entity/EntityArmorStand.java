@@ -176,4 +176,7 @@ public class EntityArmorStand {
         return entityMinion.createBlock(location);
     }
 
+    public void deleteMinionWorld() {
+        entity.remove();
+    }
 }

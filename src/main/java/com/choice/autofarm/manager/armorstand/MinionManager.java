@@ -19,6 +19,8 @@ public interface MinionManager {
 
     void spawnMinion(EntityPlayer player, Location placeLocation, String entityUuid, MinionType minionType);
 
+    void getItemFromMinion(EntityPlayer player, EntityMinion minion);
+
     void giveHeadToPlayer(EntityPlayer player, MinionType minionType);
 
     List<EntityMinion> getListEntityMinionByUUID(UUID uuid);

@@ -51,7 +51,7 @@ public class InteractEvent implements Listener {
         if (minion == null) return;
 
         event.setCancelled(true);
-        removeMinionItems(player, minion);
+        manager.getItemFromMinion(player, minion);
     }
 
     @EventHandler
@@ -66,8 +66,6 @@ public class InteractEvent implements Listener {
         event.setCancelled(true);
         if(!manager.minionClickedIsFromPlayer(player.getUniqueId())) return;
 
-        removeMinionItems(player, minion);
-        entity.remove();
         manager.removeMinion(player, minion);
 
     }
@@ -82,10 +80,6 @@ public class InteractEvent implements Listener {
 
     private boolean isValidArmorStandEntity(Entity entity) {
         return entity instanceof ArmorStand;
-    }
-
-    private void removeMinionItems(EntityPlayer player, EntityMinion minion) {
-
     }
 
     private void removePlayerItem(EntityPlayer player, ItemStack item) {

@@ -2,6 +2,7 @@ package com.choice.autofarm.runnable;
 
 import com.choice.autofarm.AutoFarm;
 import com.choice.autofarm.entity.EntityArmorStand;
+import com.choice.autofarm.entity.minion.domain.MinionType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,9 +10,12 @@ import org.mineacademy.fo.model.SimpleRunnable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.choice.autofarm.config.Settings.AutoFarmSettings.ALLOW_VERTICAL;
+import static com.choice.autofarm.config.Settings.AutoFarmSettings.DISTANCE_FARM;
+import static com.choice.autofarm.util.BlocksUtil.getRandomBlock;
+
 public class BlockPlaceRunnable extends SimpleRunnable {
 
-    private static final int DISTANCE = 2;
     private static final int MAX_PLACEMENT_STATUS = 10;
 
     private final EntityArmorStand entityArmorStand;
@@ -41,9 +45,12 @@ public class BlockPlaceRunnable extends SimpleRunnable {
 
     private void placeBlocks() {
         Location entityLocation = entityArmorStand.getLocation();
-        Block targetBlock = getRandomBlock(entityLocation);
+        Block targetBlock = getRandomBlock(
+                entityLocation,
+                entityArmorStand.getArmorStandType() == MinionType.WHEAT ? entityLocation.getBlockY() : entityLocation.getBlockY() - 1
+        );
 
-        if (!hasSpaceAround(entityLocation.subtract(0, 1, 0))) {
+        if (!hasSpaceAround(entityLocation)) {
             handleNoSpace();
             return;
         }
@@ -70,7 +77,7 @@ public class BlockPlaceRunnable extends SimpleRunnable {
     private void handleAirBlock(Block targetBlock) {
         Location blockLocation = targetBlock.getLocation();
         entityArmorStand.rotateToBlock(blockLocation);
-        targetBlock.setType(Material.COBBLESTONE);
+        targetBlock.setType(entityArmorStand.addBlockInWorld(blockLocation).toMaterial());
         placementStatus = 0;
     }
 
@@ -83,21 +90,18 @@ public class BlockPlaceRunnable extends SimpleRunnable {
     }
 
     private boolean hasSpaceAround(Location location) {
-        int radius = 1;
+        int radius = DISTANCE_FARM;
         for (int x = -radius; x <= radius; x++) {
-            for (int z = -radius; z <= radius; z++) {
-                Block block = location.getWorld().getBlockAt(location.getBlockX() + x, location.getBlockY(), location.getBlockZ() + z);
-                if (block.getType() == Material.AIR) {
-                    return true;
+            for (int y = -radius; y <= radius; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    Block block = location.getWorld().getBlockAt(location.getBlockX() + x, ALLOW_VERTICAL ? location.getBlockY() + y : location.getBlockY() - 1, location.getBlockZ() + z);
+                    if (block.getType() == Material.AIR) {
+                        return true;
+                    }
                 }
             }
         }
         return false;
     }
 
-    private Block getRandomBlock(Location location) {
-        int randomX = location.getBlockX() - DISTANCE + ThreadLocalRandom.current().nextInt(2 * DISTANCE + 1);
-        int randomZ = location.getBlockZ() - DISTANCE + ThreadLocalRandom.current().nextInt(2 * DISTANCE + 1);
-        return location.getWorld().getBlockAt(randomX, location.getBlockY() - 1, randomZ);
-    }
 }

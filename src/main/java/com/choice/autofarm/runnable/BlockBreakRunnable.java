@@ -3,6 +3,7 @@ package com.choice.autofarm.runnable;
 import com.choice.autofarm.AutoFarm;
 import com.choice.autofarm.block_packet.BlockPositionPacket;
 import com.choice.autofarm.entity.EntityArmorStand;
+import com.choice.autofarm.entity.minion.domain.MinionType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,10 +13,13 @@ import org.mineacademy.fo.remain.CompMaterial;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.choice.autofarm.config.Settings.AutoFarmSettings.ALLOW_VERTICAL;
+import static com.choice.autofarm.config.Settings.AutoFarmSettings.DISTANCE_FARM;
+import static com.choice.autofarm.util.BlocksUtil.getRandomBlock;
+
 public class BlockBreakRunnable extends SimpleRunnable {
 
     private static final int MAX_BLOCK_STATUS = 10;
-    private static final int DISTANCE = 2;
     private static final int BREAK_INTERVAL_SECONDS = 20;
 
     private int blockStatus = 0;
@@ -87,8 +91,10 @@ public class BlockBreakRunnable extends SimpleRunnable {
     }
 
     private void handleNoBlockFocus(Location location) {
-        int y = location.getBlockY() - 1;
-        Block block = getRandomBlock(location, y);
+        Block block = getRandomBlock(
+                location,
+                entityArmorStand.getArmorStandType() == MinionType.WHEAT ? location.getBlockY()  : location.getBlockY() - 1
+        );
 
         if (areLocationsEqual(block.getLocation(), location)) {
             breakTimer = 0;
@@ -115,13 +121,6 @@ public class BlockBreakRunnable extends SimpleRunnable {
             entityArmorStand.stopLookingBlocks();
             entityArmorStand.startPlaceBlocks();
         }
-    }
-
-    private Block getRandomBlock(Location location, int y) {
-        int randomX = location.getBlockX() - DISTANCE + ThreadLocalRandom.current().nextInt(2 * DISTANCE + 1);
-        int randomY = location.getBlockY() - DISTANCE + ThreadLocalRandom.current().nextInt(DISTANCE + 1);
-        int randomZ = location.getBlockZ() - DISTANCE + ThreadLocalRandom.current().nextInt(2 * DISTANCE + 1);
-        return location.getWorld().getBlockAt(randomX, randomY, randomZ);
     }
 
     private boolean isValidBlock() {

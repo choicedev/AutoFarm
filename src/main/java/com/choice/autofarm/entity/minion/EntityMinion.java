@@ -1,6 +1,7 @@
 package com.choice.autofarm.entity.minion;
 
 import com.choice.autofarm.entity.minion.domain.MinionType;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import org.mineacademy.fo.remain.CompMaterial;
@@ -18,6 +19,7 @@ public interface EntityMinion {
     ItemStack getItemHand();
     Map<String, ItemStack> getArmor();
     CompMaterial blockFarm();
+    CompMaterial createBlock(Location location);
     void addAmount();
     int getAmount();
     void setAmount(int amount);

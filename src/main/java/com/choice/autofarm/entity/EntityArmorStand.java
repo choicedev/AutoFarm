@@ -14,6 +14,7 @@ import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
+import org.mineacademy.fo.remain.CompMaterial;
 
 import java.util.UUID;
 
@@ -170,4 +171,9 @@ public class EntityArmorStand {
     public boolean isValidBlock(Block block){
         return entityMinion.isValidBlocks(block);
     }
+
+    public CompMaterial addBlockInWorld(Location location){
+        return entityMinion.createBlock(location);
+    }
+
 }

@@ -4,6 +4,7 @@ import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.util.FarmConstants;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.Getter;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import org.mineacademy.fo.menu.model.ItemCreator;
@@ -109,11 +110,16 @@ public class EntityStoneMinion implements EntityMinion {
     @Override
     public boolean isValidBlocks(Block block) {
         CompMaterial material = CompMaterial.fromBlock(block);
-        return block.getType().isSolid()  && material == CompMaterial.STONE || material == CompMaterial.COBBLED_DEEPSLATE;
+        return block.getType().isSolid()  && material == CompMaterial.STONE || material == CompMaterial.COBBLESTONE;
     }
 
     @Override
     public CompMaterial blockFarm() {
+        return CompMaterial.COBBLESTONE;
+    }
+
+    @Override
+    public CompMaterial createBlock(Location location) {
         return CompMaterial.COBBLESTONE;
     }
 }

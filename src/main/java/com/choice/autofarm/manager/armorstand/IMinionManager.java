@@ -5,6 +5,7 @@ import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.entity.minion.EntityMinion;
 import com.choice.autofarm.entity.player.EntityPlayer;
 import org.bukkit.Location;
+import org.mineacademy.fo.menu.model.ItemCreator;
 
 import java.util.*;
 
@@ -59,7 +60,7 @@ public class IMinionManager implements MinionManager {
     }
 
     @Override
-    public void deleteArmor(EntityPlayer player, EntityMinion minion) {
+    public void removeMinion(EntityPlayer player, EntityMinion minion) {
         entityArmorStandsMap.getOrDefault(player.getUniqueId(), Collections.emptyList())
                 .stream()
                 .filter(filter -> filter.getMinionUUID().equals(minion.getUUID()))
@@ -69,6 +70,8 @@ public class IMinionManager implements MinionManager {
                      entityArmorStand.cancelAnimateRightArm();
                     entityArmorStand.stopRunnable(minion.getUUID());
                     giveHeadToPlayer(player, minion.getMinionType());
+                    player.addItemsOrDrop(ItemCreator.of(minion.blockFarm()).amount(minion.getAmount()).make());
+                    minion.setAmount(0);
                     player.sendMessage("<gold><farm> removed from world", map -> map.put("farm", minion.getDisplayName()));
                 });
 

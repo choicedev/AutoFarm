@@ -45,6 +45,7 @@ dependencies {
     implementation "com.github.cryptomorin:XSeries:9.5.0"
     implementation "co.aikar:acf-bukkit:0.5.1-SNAPSHOT"
     implementation "de.tr7zw:item-nbt-api:2.12.2"
+    implementation "io.github.rysefoxx.inventory:RyseInventory-Plugin:1.5.7"
     implementation ("com.github.kangarko:Foundation:6.6.1") {
         transitive = false
     }
@@ -96,4 +97,5 @@ shadowJar {
     relocate 'DebugProbesKt', 'com.choice.api'
     relocate 'de.tr7zw.changeme.nbtapi', 'com.choice.api'
     relocate 'org.mineacademy', 'com.choice.api'
+    relocate 'oio.github.rysefoxx', 'com.choice.api'
 }

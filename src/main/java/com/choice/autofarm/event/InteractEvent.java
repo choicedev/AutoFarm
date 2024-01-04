@@ -22,8 +22,6 @@ import org.bukkit.inventory.ItemStack;
 import org.mineacademy.fo.menu.model.ItemCreator;
 import org.mineacademy.fo.remain.CompMaterial;
 
-import java.util.UUID;
-
 public class InteractEvent implements Listener {
     MinionManager manager = AutoFarm.getArmorStandManager();
 
@@ -66,11 +64,11 @@ public class InteractEvent implements Listener {
         EntityMinion minion = manager.getEntityMinionByUUID(player.getUniqueId(), entityUUID);
         if (minion == null) return;
         event.setCancelled(true);
-        if(minion.getOwner() != player.getUniqueId()) return;
+        if(!manager.minionClickedIsFromPlayer(player.getUniqueId())) return;
 
         removeMinionItems(player, minion);
         entity.remove();
-        manager.deleteArmor(player, minion);
+        manager.removeMinion(player, minion);
 
     }
 
@@ -87,8 +85,7 @@ public class InteractEvent implements Listener {
     }
 
     private void removeMinionItems(EntityPlayer player, EntityMinion minion) {
-        player.addItemsOrDrop(ItemCreator.of(minion.blockFarm()).amount(minion.getAmount()).make());
-        minion.setAmount(0);
+
     }
 
     private void removePlayerItem(EntityPlayer player, ItemStack item) {

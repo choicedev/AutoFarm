@@ -5,7 +5,11 @@ import com.choice.autofarm.util.EntityMinionNBT;
 import com.choice.autofarm.util.FarmConstants;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.inventory.ItemStack;
 import org.mineacademy.fo.menu.model.ItemCreator;
 import org.mineacademy.fo.remain.CompMaterial;
@@ -84,6 +88,22 @@ public class EntityWheatMinion implements EntityMinion {
     }
 
     @Override
+    public CompMaterial createBlock(Location location) {
+        Location belowBlock = location.subtract(0, 1, 0);
+        Material materialFarm = belowBlock.getBlock().getType();
+        Block block = location.getBlock();
+        Block blockFarm = belowBlock.getBlock();
+        boolean isBlockFarm = materialFarm == Material.FARMLAND;
+
+        if(!isBlockFarm) {
+            blockFarm.setType(Material.FARMLAND);
+        }
+
+        block.setType(Material.WHEAT_SEEDS);
+        return CompMaterial.WHEAT_SEEDS;
+    }
+
+    @Override
     public void addAmount() {
         amount += 1;
     }
@@ -101,6 +121,12 @@ public class EntityWheatMinion implements EntityMinion {
     @Override
     public boolean isValidBlocks(Block block) {
         CompMaterial material = CompMaterial.fromBlock(block);
-        return material == CompMaterial.WHEAT;
+        if(material == CompMaterial.WHEAT){
+            Ageable age = (Ageable) block.getBlockData();
+            return age.getAge() == 7;
+        }else{
+            return false;
+        }
+
     }
 }

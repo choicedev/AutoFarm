@@ -25,5 +25,5 @@ public interface MinionManager {
 
     EntityMinion getEntityMinionByUUID(UUID uuid, String entityUuid);
 
-    void deleteArmor(EntityPlayer entityPlayer, EntityMinion minion);
+    void removeMinion(EntityPlayer entityPlayer, EntityMinion minion);
 }

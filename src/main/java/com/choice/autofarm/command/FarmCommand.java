@@ -9,7 +9,7 @@ import com.choice.autofarm.entity.player.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import static com.choice.autofarm.config.Settings.AutoFarmSettings.DISTANCE_FARM;
+import static com.choice.autofarm.config.Settings.AutoFarmSettings.DISTANCE;
 
 @CommandAlias("farm")
 public class FarmCommand extends BaseCommand {
@@ -29,7 +29,7 @@ public class FarmCommand extends BaseCommand {
         EntityPlayer entityPlayer = new EntityPlayer(player);
 
         AutoFarm.getArmorStandManager().giveHeadToPlayer(entityPlayer, MinionType.WHEAT);
-        Bukkit.broadcastMessage(""+DISTANCE_FARM);
+        Bukkit.broadcastMessage(""+ DISTANCE);
         entityPlayer.sendMessage("<green>New farm in added");
 
     }

@@ -3,6 +3,7 @@ package com.choice.autofarm;
 import co.aikar.commands.BukkitCommandManager;
 import com.choice.autofarm.command.FarmCommand;
 import com.choice.autofarm.config.Settings;
+import com.choice.autofarm.config.remote.sql.MinionSQL;
 import com.choice.autofarm.event.InteractEvent;
 import com.choice.autofarm.event.ProjectileEvent;
 import com.choice.autofarm.manager.EventManager;
@@ -28,6 +29,9 @@ public final class AutoFarm extends SimplePlugin {
         minionManager = new IMinionManager();
         new EventManager().registerEvents(new InteractEvent());
         new EventManager().registerEvents(new ProjectileEvent());
+
+        MinionSQL sql = new MinionSQL();
+        sql.save();
 
         BukkitCommandManager manager = new BukkitCommandManager(this);
         manager.registerCommand(new FarmCommand());

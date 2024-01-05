@@ -7,14 +7,8 @@ import com.choice.autofarm.entity.minion.domain.MinionType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Ageable;
 import org.mineacademy.fo.model.SimpleRunnable;
-import org.mineacademy.fo.remain.CompMaterial;
 
-import java.util.concurrent.ThreadLocalRandom;
-
-import static com.choice.autofarm.config.Settings.AutoFarmSettings.ALLOW_VERTICAL;
-import static com.choice.autofarm.config.Settings.AutoFarmSettings.DISTANCE_FARM;
 import static com.choice.autofarm.util.BlocksUtil.getRandomBlock;
 
 public class BlockBreakRunnable extends SimpleRunnable {

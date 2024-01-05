@@ -8,10 +8,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.mineacademy.fo.model.SimpleRunnable;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import static com.choice.autofarm.config.Settings.AutoFarmSettings.ALLOW_VERTICAL;
-import static com.choice.autofarm.config.Settings.AutoFarmSettings.DISTANCE_FARM;
+import static com.choice.autofarm.config.Settings.AutoFarmSettings.DISTANCE;
 import static com.choice.autofarm.util.BlocksUtil.getRandomBlock;
 
 public class BlockPlaceRunnable extends SimpleRunnable {
@@ -90,7 +88,7 @@ public class BlockPlaceRunnable extends SimpleRunnable {
     }
 
     private boolean hasSpaceAround(Location location) {
-        int radius = DISTANCE_FARM;
+        int radius = DISTANCE;
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {
                 for (int z = -radius; z <= radius; z++) {

@@ -1,12 +1,16 @@
 package com.choice.autofarm.event;
 
 import com.choice.autofarm.AutoFarm;
+import com.choice.autofarm.data.NBTDataHandler;
+import com.choice.autofarm.entity.EntityArmorStand;
 import com.choice.autofarm.entity.minion.EntityMinion;
 import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.entity.player.EntityPlayer;
 import com.choice.autofarm.manager.armorstand.MinionManager;
 import com.choice.autofarm.util.EntityMinionNBT;
 import com.choice.autofarm.util.FarmConstants;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -19,8 +23,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.mineacademy.fo.menu.model.ItemCreator;
+import org.mineacademy.fo.Common;
 import org.mineacademy.fo.remain.CompMaterial;
+
+import static com.choice.autofarm.util.FarmConstants.MINION_TAG;
 
 public class InteractEvent implements Listener {
     MinionManager manager = AutoFarm.getArmorStandManager();
@@ -31,13 +37,17 @@ public class InteractEvent implements Listener {
 
         EntityPlayer player = new EntityPlayer(event.getPlayer());
         Location placeLocation = event.getClickedBlock().getLocation();
-        MinionType minionType = EntityMinionNBT.getType(event.getItem(), CompMaterial.PLAYER_HEAD);
+        if(!new NBTItem(event.getItem()).hasNBTData()) return;
+
+        NBTDataHandler data = new NBTDataHandler(event.getItem(), MINION_TAG);
+        MinionType minionType = EntityMinionNBT.getType(event.getItem());
         if (minionType == MinionType.NULL) return;
 
         event.setCancelled(true);
         removePlayerItem(player, event.getItem());
 
-        manager.spawnMinion(player, placeLocation, getMinionUuid(event.getItem()), minionType);
+
+        manager.spawnMinion(player, placeLocation, event.getItem());
     }
 
     @EventHandler
@@ -46,11 +56,13 @@ public class InteractEvent implements Listener {
         EntityPlayer player = new EntityPlayer(event.getPlayer());
 
         ArmorStand entity = (ArmorStand) event.getRightClicked();
-        String entityUUID = EntityMinionNBT.getMinionUUID(entity.getItemInHand());
-        EntityMinion minion = manager.getEntityMinionByUUID(player.getUniqueId(), entityUUID);
+        EntityMinion minion = EntityMinionNBT.getEntityMinion(entity.getItemInHand());
         if (minion == null) return;
-
         event.setCancelled(true);
+        if(!player.getUniqueId().toString().equals(minion.getOwner().toString())) return;
+
+        int amount = EntityMinionNBT.getAmountMinion(entity.getItemInHand());
+        if(EntityMinionNBT.getAmountMinion(entity.getItemInHand()) < 0) return;
         manager.getItemFromMinion(player, minion);
     }
 
@@ -60,14 +72,13 @@ public class InteractEvent implements Listener {
 
         EntityPlayer player = new EntityPlayer((Player) event.getDamager());
         ArmorStand entity = (ArmorStand) event.getEntity();
-        String entityUUID = EntityMinionNBT.getMinionUUID(entity.getItemInHand());
-        EntityMinion minion = manager.getEntityMinionByUUID(player.getUniqueId(), entityUUID);
+        EntityMinion minion = EntityMinionNBT.getEntityMinion(entity.getItemInHand());
         if (minion == null) return;
         event.setCancelled(true);
-        if(!manager.minionClickedIsFromPlayer(player.getUniqueId())) return;
+        if(!manager.minionClickedIsFromPlayer(player.getUniqueId(), minion)) return;
 
         manager.removeMinion(player, minion);
-
+        entity.remove();
     }
 
     private boolean isValidInteraction(PlayerInteractEvent event) {
@@ -75,7 +86,8 @@ public class InteractEvent implements Listener {
     }
 
     private String getMinionUuid(ItemStack item) {
-        return EntityMinionNBT.getStringInfo(CompMaterial.DIAMOND_PICKAXE, item, FarmConstants.ENTITY_MINION_UUID);
+        NBTDataHandler data = new NBTDataHandler(item, MINION_TAG);
+        return data.getString(FarmConstants.ENTITY_MINION_UUID);
     }
 
     private boolean isValidArmorStandEntity(Entity entity) {

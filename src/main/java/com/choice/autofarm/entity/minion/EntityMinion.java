@@ -6,7 +6,6 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import org.mineacademy.fo.remain.CompMaterial;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,4 +25,10 @@ public interface EntityMinion {
 
     boolean isValidBlocks(Block block);
 
+    int getBreakDistance();
+
+    boolean getAllowBreakVertical();
+
+    Double getLevel();
+    void updateLevel(Double level);
 }

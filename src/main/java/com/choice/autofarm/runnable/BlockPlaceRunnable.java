@@ -7,9 +7,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.mineacademy.fo.model.SimpleRunnable;
+import org.mineacademy.fo.remain.CompMaterial;
 
-import static com.choice.autofarm.config.Settings.AutoFarmSettings.ALLOW_VERTICAL;
-import static com.choice.autofarm.config.Settings.AutoFarmSettings.DISTANCE;
 import static com.choice.autofarm.util.BlocksUtil.getRandomBlock;
 
 public class BlockPlaceRunnable extends SimpleRunnable {
@@ -42,13 +41,16 @@ public class BlockPlaceRunnable extends SimpleRunnable {
     }
 
     private void placeBlocks() {
+        MinionType type = entityArmorStand.getArmorStandType();
         Location entityLocation = entityArmorStand.getLocation();
         Block targetBlock = getRandomBlock(
-                entityLocation,
-                entityArmorStand.getArmorStandType() == MinionType.WHEAT ? entityLocation.getBlockY() : entityLocation.getBlockY() - 1
+                type == MinionType.WHEAT ? entityArmorStand.getLocation().add(0, 1, 0) : entityLocation,
+                type == MinionType.WHEAT ? entityLocation.getBlockY()  : entityLocation.getBlockY() - 1,
+                entityArmorStand.getBreakDistance(),
+                entityArmorStand.getAllowBreakVertical()
         );
 
-        if (!hasSpaceAround(entityLocation)) {
+        if (!hasSpaceAround(type == MinionType.WHEAT ? entityArmorStand.getLocation().add(0, 1, 0) : entityLocation)) {
             handleNoSpace();
             return;
         }
@@ -74,8 +76,10 @@ public class BlockPlaceRunnable extends SimpleRunnable {
 
     private void handleAirBlock(Block targetBlock) {
         Location blockLocation = targetBlock.getLocation();
+        CompMaterial addMaterial = entityArmorStand.addBlockInWorld(blockLocation);
+        if(addMaterial == CompMaterial.AIR) return;
         entityArmorStand.rotateToBlock(blockLocation);
-        targetBlock.setType(entityArmorStand.addBlockInWorld(blockLocation).toMaterial());
+        targetBlock.setType(addMaterial.toMaterial());
         placementStatus = 0;
     }
 
@@ -88,11 +92,12 @@ public class BlockPlaceRunnable extends SimpleRunnable {
     }
 
     private boolean hasSpaceAround(Location location) {
-        int radius = DISTANCE;
+
+        int radius = entityArmorStand.getBreakDistance();
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {
                 for (int z = -radius; z <= radius; z++) {
-                    Block block = location.getWorld().getBlockAt(location.getBlockX() + x, ALLOW_VERTICAL ? location.getBlockY() + y : location.getBlockY() - 1, location.getBlockZ() + z);
+                    Block block = location.getWorld().getBlockAt(location.getBlockX() + x, entityArmorStand.getAllowBreakVertical() ? location.getBlockY() + y : location.getBlockY() - 1, location.getBlockZ() + z);
                     if (block.getType() == Material.AIR) {
                         return true;
                     }

@@ -2,7 +2,6 @@ package com.choice.autofarm.event;
 
 import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.util.EntityMinionNBT;
-import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,7 +14,7 @@ public class ProjectileEvent implements Listener {
     public void onEvent(ProjectileHitEvent event){
         if(!(event.getHitEntity() instanceof ArmorStand stand)) return;
 
-        MinionType minion = EntityMinionNBT.getType(stand.getItemInHand(), CompMaterial.DIAMOND_PICKAXE);
+        MinionType minion = EntityMinionNBT.getType(stand.getItemInHand());
         if(minion == MinionType.NULL) return;
         event.setCancelled(true);
     }

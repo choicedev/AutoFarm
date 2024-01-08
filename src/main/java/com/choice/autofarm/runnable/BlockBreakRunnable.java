@@ -60,7 +60,6 @@ public class BlockBreakRunnable extends SimpleRunnable {
     private void executeLookingBlocks() {
         Location location = entityArmorStand.getLocation();
         entityArmorStand.updateName(String.valueOf(entityArmorStand.getAmount()));
-
         if (blockFocused != null) {
             handleBlockFocus();
         } else {
@@ -85,10 +84,13 @@ public class BlockBreakRunnable extends SimpleRunnable {
     }
 
     private void handleNoBlockFocus(Location location) {
+        MinionType type = entityArmorStand.getArmorStandType();
         Block block = getRandomBlock(
-                location,
-                entityArmorStand.getArmorStandType() == MinionType.WHEAT ? location.getBlockY()  : location.getBlockY() - 1
-        );
+                type == MinionType.WHEAT ? location.add(0, 1, 0)  : location,
+                type == MinionType.WHEAT ? location.getBlockY()  : location.getBlockY() - 1,
+                entityArmorStand.getBreakDistance(),
+                entityArmorStand.getAllowBreakVertical()
+       );
 
         if (areLocationsEqual(block.getLocation(), location)) {
             breakTimer = 0;

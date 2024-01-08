@@ -22,8 +22,8 @@ public class MinionHologram {
         this.minionName = name;
     }
 
-    public void createHologramName(Location location){
-        List<String> lines = Arrays.asList(minionName, "0");
+    public void createHologramName(Location location, int amount){
+        List<String> lines = Arrays.asList(minionName, ""+amount);
         hologram = DHAPI.createHologram(HOLOGRAM_NAME, location.add(0, 2, 0), lines);
     }
 

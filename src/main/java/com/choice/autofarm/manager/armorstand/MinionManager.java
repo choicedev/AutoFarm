@@ -1,31 +1,31 @@
 package com.choice.autofarm.manager.armorstand;
 
-import com.choice.autofarm.entity.minion.domain.MinionType;
+import com.choice.autofarm.entity.EntityArmorStand;
 import com.choice.autofarm.entity.minion.EntityMinion;
+import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.entity.player.EntityPlayer;
 import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface MinionManager {
 
+    boolean minionClickedIsFromPlayer(UUID uuid, EntityMinion minion);
 
-    void addMinionToPlayer(UUID uuid, EntityMinion entityMinion);
+    void spawnMinion(EntityPlayer player, Location placeLocation, ItemStack head);
 
-    boolean containsKey(UUID uuid);
+    void getItemFromMinion(EntityPlayer player, EntityMinion entityMinion);
 
-    boolean minionClickedIsFromPlayer(UUID uuid);
-
-    void spawnMinion(EntityPlayer player, Location placeLocation, String entityUuid, MinionType minionType);
-
-    void getItemFromMinion(EntityPlayer player, EntityMinion minion);
+    void startEntityArmor(EntityMinion minion, ItemStack item, ArmorStand armorStand);
 
     void giveHeadToPlayer(EntityPlayer player, MinionType minionType);
 
-    List<EntityMinion> getListEntityMinionByUUID(UUID uuid);
+    void giveHeadToPlayerMinion(EntityPlayer player, EntityMinion minion);
 
-    EntityMinion getEntityMinionByUUID(UUID uuid, String entityUuid);
+    void newHeadToPlayer(EntityPlayer player, MinionType minionType);
 
-    void removeMinion(EntityPlayer entityPlayer, EntityMinion minion);
+    void removeMinion(EntityPlayer player, EntityMinion minion);
 }

@@ -4,6 +4,7 @@ import com.choice.autofarm.entity.minion.EntityMinion;
 import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.runnable.BlockBreakRunnable;
 import com.choice.autofarm.runnable.BlockPlaceRunnable;
+import com.choice.autofarm.util.EntityMinionNBT;
 import com.choice.autofarm.util.FarmConstants;
 import com.choice.autofarm.util.armorstand.BodyPart;
 import com.choice.autofarm.util.armorstand.BodyPart.Parts;
@@ -14,6 +15,7 @@ import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.mineacademy.fo.remain.CompMaterial;
 
 import java.util.UUID;
@@ -44,9 +46,18 @@ public class EntityArmorStand {
         bodyPart = new BodyPart();
     }
 
+    public EntityArmorStand(Location location, EntityMinion entityMinion, ArmorStand entity) {
+        this.spawnLocation = location.add(0.5, 1, 0.5);
+        this.entityMinion = entityMinion;
+        blockBreakRunnable = new BlockBreakRunnable(this);
+        blockPlaceRunnable = new BlockPlaceRunnable(this);
+        bodyPart = new BodyPart();
+        this.entity = entity;
+    }
+
     public void createEntityArmorStand() {
         entity = spawnLocation.getWorld().spawn(spawnLocation, ArmorStand.class);
-        minionHologram = new MinionHologram(String.valueOf(entityMinion.getUUID()), entityMinion.getDisplayName());
+        createHologram();
         configureArmorStand();
     }
 
@@ -56,9 +67,12 @@ public class EntityArmorStand {
         entity.setBasePlate(false);
         entity.setCustomNameVisible(false);
         addEquipment();
-        minionHologram.createHologramName(spawnLocation);
     }
 
+    public void createHologram(){
+        minionHologram = new MinionHologram(String.valueOf(entityMinion.getUUID()));
+        minionHologram.createHologramName(spawnLocation, entityMinion.getAmount());
+    }
     private void addEquipment() {
 
         entity.setItemInHand(entityMinion.getItemHand());
@@ -79,6 +93,7 @@ public class EntityArmorStand {
                 name,
                 entity.getLocation()
         );
+        EntityMinionNBT.setLocation(entity.getItemInHand(), entity.getLocation());
     }
 
     public MinionType getArmorStandType() {
@@ -101,6 +116,11 @@ public class EntityArmorStand {
 
     public void addAmount() {
         entityMinion.addAmount();
+        EntityMinionNBT.addAmountMinion(entity.getItemInHand(), entityMinion.getAmount());
+    }
+
+    public void setAmount(int amount){
+        entityMinion.setAmount(amount);
     }
 
     public int getAmount() {
@@ -146,7 +166,7 @@ public class EntityArmorStand {
     }
 
     public Location getPlayerSpawnLocation() {
-        return playerLocation;
+        return playerLocation == null ? entity.getLocation() : playerLocation;
     }
 
     public UUID getMinionUUID() {
@@ -178,5 +198,17 @@ public class EntityArmorStand {
 
     public void deleteMinionWorld() {
         entity.remove();
+    }
+
+    public int getBreakDistance() {
+        return entityMinion.getBreakDistance();
+    }
+
+    public CompMaterial getBlockFarm(){
+        return entityMinion.blockFarm();
+    }
+
+    public boolean getAllowBreakVertical(){
+        return entityMinion.getAllowBreakVertical();
     }
 }

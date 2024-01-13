@@ -1,68 +1,52 @@
 # !-----------------------------------------------------------------------------------------------!
-#                       Welcome to the main configuration of ${project.name}
-# !-----------------------------------------------------------------------------------------------!
-#
-#    This is the main plugin's settings class. You can use SimpleSettings to load values from it,
-#    and update it automatically.
-#
-#    For support and documentation, please visit:
-#    - https://github.com/${author}/${project.name}/wiki
-#
-# !-----------------------------------------------------------------------------------------------!
-#
-#    1) COLOR CODES are supported with the '&' character.
-#       - For usage, see http://minecraftwiki.net/wiki/Formatting_codes
-#       - When you use them, place quotes around the message like this: "Hello &cworld."
-#       - To use HEX colors, use #123456 syntax: "Hello #123456world."
-#
-#    2) TO HIDE any message, set it to 'none'.
-#
-#    3) For UNICODE CHARACTERS (smileys, symbols, ..), save the file in UTF-8 encoding. See
-#       - https://github.com/${author}/${project.name}/wiki/Use-Right-Encoding
-#
-#    4) JSON is supported.
-#       - For usage, see https://github.com/${author}/${project.name}/wiki/JSON
-#
-#    5) WHITELISTS can be turned into blacklists, by putting "@blacklist" on the first line.
-#       - Doing such, filters will only apply for messages in those lists.
-#
-#    PS: Everything above applies for all files in ${project.name}/ folder.
-#
+#                         Welcome to AutoFarm Configuration - FarmSettings
 # !-----------------------------------------------------------------------------------------------!
 
 # -------------------------------------------------------------------------------------------------
-# Example of a section
+# The prefix used in front of most chat or console messages.
+# -------------------------------------------------------------------------------------------------
+Prefix: '&8[&c${project.name}&8]&7 '
+
+databaseSettings:
+  url: jdbc:mysql://localhost:3306/farm_db
+  username: root
+  password: ''
+
+# -------------------------------------------------------------------------------------------------
+# General Minion settings.
+# Here you can customize the behavior of the minions during the farm phase.
+# You can adjust the distance the minion will travel to collect resources and whether it can collect blocks vertically or horizontally.
+# {distance} maximum distance he can break blocks
+# {allow_vertical} enable/disable whether it can collect/place blocks vertically
 # -------------------------------------------------------------------------------------------------
 FarmSettings:
-  distance: 2
-  allow_vertical: false
-
-# -------------------------------------------------------------------------------------------------
-# The formats used in the {timestamp} and {location} variables. For help with timestamp, see:
-# https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
-# -------------------------------------------------------------------------------------------------
-Timestamp_Format: "dd.MM.yyyy HH:mm:ss"
-
-# -------------------------------------------------------------------------------------------------
-# What language should we use for messages? If it exists, the language file will be copied 
-# to your messages/ folder where you can edit it.
-# -------------------------------------------------------------------------------------------------
-Locale: pt_BR
-
-# -------------------------------------------------------------------------------------------------
-# The prefix used in front of most chat or console messages. You can manually use it with
-# {plugin_prefix} variable anywhere.
-# -------------------------------------------------------------------------------------------------
-Prefix: "&8[&c${project.name}&8]&7 "
-
-# -------------------------------------------------------------------------------------------------
-# List of section names that will print informative messages about this plugin's features.
-# The Debugger class utilizes this key and will only print messages for sections enabled below.
-# -------------------------------------------------------------------------------------------------
-Debug: []
+  STONE:
+    name-item: '&e&lFarm &4&lSTONE'
+    name-hologram:
+      - '{name}'
+      - '{amount}'
+      - '{status}'
+    head-skin: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTUwM2MwMDg5MDMyNjYwNTA2N2ZmMTZmZmZiYzJkMDUwMjI1MWIzNjgwYzFhY2MxZDY4Y2QzZDA2NGQwNTc3In19fQ==
+    hand-item-nbt: '{Unbreakable:1,Enchantments:[{id:channeling,lvl:1},{id:vanishing_curse,lvl:1},{id:efficiency,lvl:7},{id:fire_aspect,lvl:4},{id:fire_protection,lvl:5},{id:flame,lvl:1},{id:unbreaking,lvl:7}]}'
+    armor-nbt: '{Trim:{pattern:coast,material:lapis},display:{color:4673362}}'
+    distance: 2
+    allow_vertical: false
+  WHEAT:
+    name-item: '&e&lFarm &4&lWHEAT'
+    name-hologram:
+      - '{name}'
+      - '{amount}'
+      - '{status}'
+    head-skin: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjMyNTQ1YTk4OTdjNGYwODA5ZDdlOWQ3ZGU0YjQ5OWNhZmQ4ZDZhNDJhMGVhY2Y0Y2FhYmYzNDg4YWRjYTIxMSJ9fX0=
+    hand-item-nbt: '{Unbreakable:1,Enchantments:[{id:channeling,lvl:1},{id:vanishing_curse,lvl:1},{id:efficiency,lvl:7},{id:fire_aspect,lvl:4},{id:fire_protection,lvl:5},{id:flame,lvl:1},{id:unbreaking,lvl:7}]}'
+    armor-nbt: '{Trim:{pattern:coast,material:lapis},display:{color:4673362}}'
+    distance: 2
+    allow_vertical: false
+  # - true -> vertical / horizontal
+  # - false -> horizontal only
 
 # -------------------------------------------------------------------------------------------------
 # Do not change this value, otherwise it will corrupt your plugin installation!
-# NB: Don't forget to keep this up-to-date with the getConfigVersion method in your Settings class. 
+# NB: Don't forget to keep this up-to-date with the getConfigVersion method in your Settings class.
 # -------------------------------------------------------------------------------------------------
 Version: 1

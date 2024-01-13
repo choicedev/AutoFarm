@@ -5,9 +5,13 @@ public class FarmConstants {
     public static Integer DISTANCE_FARM;
 
     public static String ENTITY_MINION_TYPE = "ENTITY_MINION_TYPE";
+    public static String ENTITY_MINION_LEVEL = "ENTITY_MINION_LEVEL";
+    public static String ENTITY_MINION_BLOCKS = "ENTITY_MINION_BLOCKS";
     public static String ENTITY_MINION_UUID = "ENTITY_MINION_UUID";
     public static String ENTITY_MINION_OWNER_UUID = "ENTITY_MINION_OWNER_UUID";
     public static String ENTITY_MINION_NAME = "ENTITY_MINION_NAME";
+    public static String ENTITY_CRAFTED = "ENTITY_CRAFTED";
+    public static String MINION_TAG = "MINION_TAG";
 
 
 

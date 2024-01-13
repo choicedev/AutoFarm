@@ -5,11 +5,14 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.mineacademy.fo.PlayerUtil;
+import org.mineacademy.fo.remain.CompMaterial;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,32 +59,50 @@ public class EntityPlayer {
         return PlayerUtil.addItemsOrDrop(this.player, items);
     }
 
+    public ItemStack getItemHand(){
+        return this.player.getItemInHand();
+    }
+
     public void sendMessage(String message) {
         sendMessage(message, null);
     }
+
 
     public void sendMessage(String message, PlaceholdersFunction placeholders) {
         Map<String, String> map = new HashMap<>();
         if (placeholders != null) {
             placeholders.invoke(map);
         }
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            message = message.replace(entry.getKey(), entry.getValue());
+        }
+
+        Component legacyComponent = colorize(message);
 
         AutoFarm.getAudiences().player(player).sendMessage(
-                placeholders != null ? deserialize(message, map) : deserialize(message)
+                deserialize(legacyComponent)
         );
     }
 
-    private Component deserialize(String message, Map<String, String> placeholders) {
-        return MiniMessage.miniMessage().deserialize(
-                message,
-                placeholders.entrySet().stream()
-                        .map(entry -> Placeholder.parsed(entry.getKey(), entry.getValue()))
-                        .toArray(TagResolver[]::new)
-        );
+    MiniMessage miniMessage = MiniMessage.miniMessage();
+    private Component colorize(String text) {
+        Component legacyComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(text);
+
+        String serializedLegacy = LegacyComponentSerializer.legacySection().serialize(legacyComponent);
+        legacyComponent = LegacyComponentSerializer.legacySection().deserialize(serializedLegacy);
+
+        String miniMessageText = miniMessage.serialize(legacyComponent)
+                .replace("\\<", "<")
+                .replace("\\\\<", "<");
+
+        return miniMessage.deserialize(miniMessageText);
     }
 
-    private Component deserialize(String message) {
-        return MiniMessage.miniMessage().deserialize(message);
+    private Component deserialize(Component legacyComponent) {
+
+        String message = miniMessage.serialize(legacyComponent);
+
+        return miniMessage.deserialize(message);
     }
 
 

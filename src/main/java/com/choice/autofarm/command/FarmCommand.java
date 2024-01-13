@@ -6,10 +6,7 @@ import co.aikar.commands.annotation.Subcommand;
 import com.choice.autofarm.AutoFarm;
 import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.entity.player.EntityPlayer;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import static com.choice.autofarm.config.Settings.AutoFarmSettings.DISTANCE_FARM;
 
 @CommandAlias("farm")
 public class FarmCommand extends BaseCommand {
@@ -29,7 +26,6 @@ public class FarmCommand extends BaseCommand {
         EntityPlayer entityPlayer = new EntityPlayer(player);
 
         AutoFarm.getArmorStandManager().giveHeadToPlayer(entityPlayer, MinionType.WHEAT);
-        Bukkit.broadcastMessage(""+DISTANCE_FARM);
         entityPlayer.sendMessage("<green>New farm in added");
 
     }

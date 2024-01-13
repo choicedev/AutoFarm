@@ -1,5 +1,6 @@
 package com.choice.autofarm.entity.minion;
 
+import com.choice.autofarm.data.NBTDataHandler;
 import com.choice.autofarm.entity.minion.domain.MinionType;
 import com.choice.autofarm.util.FarmConstants;
 import de.tr7zw.changeme.nbtapi.NBTItem;
@@ -14,7 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.choice.autofarm.config.Settings.AutoFarmSettings.StoneSettings.*;
+import static com.choice.autofarm.config.Settings.AutoFarmSettings.WheatSettings.WHEAT_HAND_ITEM_NBT;
 import static com.choice.autofarm.util.EntityMinionNBT.*;
+import static com.choice.autofarm.util.FarmConstants.MINION_TAG;
 
 public class EntityStoneMinion implements EntityMinion {
 
@@ -24,14 +28,29 @@ public class EntityStoneMinion implements EntityMinion {
     @Getter
     private final String texture;
     private final MinionType minionType;
-
+    private Double level = 0.0;
     private int amount = 0;
-    public EntityStoneMinion(UUID ownerUUID) {
+
+
+    private boolean isNew = false;
+    public EntityStoneMinion(UUID ownerUUID, UUID entityUUID) {
         this.ownerUUID = ownerUUID;
-        this.displayName = "<#ed9e00>Farm <bold><#009999>STONE</#009999></bold>";
-        this.texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTUwM2MwMDg5MDMyNjYwNTA2N2ZmMTZmZmZiYzJkMDUwMjI1MWIzNjgwYzFhY2MxZDY4Y2QzZDA2NGQwNTc3In19fQ==";
+        this.displayName = STONE_NAME;
+        this.texture = STONE_SKIN;
         this.minionType = MinionType.STONE;
-        entityUUID = UUID.randomUUID();
+        this.entityUUID = entityUUID;
+        this.isNew = true;
+    }
+
+    public EntityStoneMinion(UUID ownerUUID, UUID entityUUID, MinionType minionType, double level, int amount) {
+        this.ownerUUID = ownerUUID;
+        this.displayName = STONE_NAME;
+        this.texture = STONE_SKIN;
+        this.minionType = minionType;
+        this.entityUUID = entityUUID;
+        this.level = level;
+        this.amount = amount;
+        this.isNew = false;
     }
 
     @Override
@@ -61,16 +80,20 @@ public class EntityStoneMinion implements EntityMinion {
                 this.entityUUID,
                 this.ownerUUID,
                 this.minionType,
-                this.texture
+                this.texture,
+                this.level,
+                this.amount,
+                this.isNew
         );
     }
 
     @Override
     public ItemStack getItemHand() {
-        NBTItem nbtItem = new NBTItem(ItemCreator.of(CompMaterial.DIAMOND_PICKAXE, FarmConstants.ENTITY_HAND_ITEM_NAME+minionType.name()).make());
-        setNBTContainer(nbtItem, "{Unbreakable:1,Enchantments:[{id:channeling,lvl:1},{id:vanishing_curse,lvl:1},{id:efficiency,lvl:7},{id:fire_aspect,lvl:4},{id:fire_protection,lvl:5},{id:flame,lvl:1},{id:unbreaking,lvl:7}]}");
-        setItemHandMinionNBT(nbtItem, this);
-        return nbtItem.getItem();
+        ItemStack item = ItemCreator.of(CompMaterial.STONE_PICKAXE, FarmConstants.ENTITY_HAND_ITEM_NAME+minionType.name()).make();
+        NBTDataHandler minion_tag = new NBTDataHandler(item, MINION_TAG);
+        setItemHandMinionNBT(minion_tag, this, this.isNew);
+        setNBTContainer(minion_tag.getNbtItem(), WHEAT_HAND_ITEM_NBT);
+        return minion_tag.getNbtItem().getItem();
     }
 
 
@@ -80,9 +103,9 @@ public class EntityStoneMinion implements EntityMinion {
         NBTItem nbtChestplate = new NBTItem(ItemCreator.of(CompMaterial.LEATHER_CHESTPLATE).make());
         NBTItem nbtLeggings = new NBTItem(ItemCreator.of(CompMaterial.LEATHER_LEGGINGS).make());
         NBTItem nbtBoots = new NBTItem(ItemCreator.of(CompMaterial.LEATHER_BOOTS).make());
-        setNBTContainer(nbtChestplate, "{Trim:{pattern:coast,material:lapis},display:{color:4673362}}");
-        setNBTContainer(nbtLeggings, "{Trim:{pattern:coast,material:lapis},display:{color:4673362}}");
-        setNBTContainer(nbtBoots, "{Trim:{pattern:coast,material:lapis},display:{color:4673362}}");
+        setNBTContainer(nbtChestplate, STONE_ARMOR_NBT);
+        setNBTContainer(nbtLeggings, STONE_ARMOR_NBT);
+        setNBTContainer(nbtBoots, STONE_ARMOR_NBT);
 
         map.put(FarmConstants.ENTITY_CHESTPLATE, nbtChestplate.getItem());
         map.put(FarmConstants.ENTITY_LEGGINGS, nbtLeggings.getItem());
@@ -121,5 +144,30 @@ public class EntityStoneMinion implements EntityMinion {
     @Override
     public CompMaterial createBlock(Location location) {
         return CompMaterial.COBBLESTONE;
+    }
+
+    @Override
+    public int getBreakDistance() {
+        return STONE_DISTANCE;
+    }
+
+    @Override
+    public boolean getAllowBreakVertical() {
+        return STONE_ALLOW_VERTICAL;
+    }
+
+    @Override
+    public Double getLevel() {
+        return 0.0;
+    }
+
+    @Override
+    public void updateLevel(Double level) {
+        this.level = level;
+    }
+
+    @Override
+    public String getStatus() {
+        return "";
     }
 }

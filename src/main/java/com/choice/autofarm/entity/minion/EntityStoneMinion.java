@@ -165,4 +165,9 @@ public class EntityStoneMinion implements EntityMinion {
     public void updateLevel(Double level) {
         this.level = level;
     }
+
+    @Override
+    public String getStatus() {
+        return "";
+    }
 }

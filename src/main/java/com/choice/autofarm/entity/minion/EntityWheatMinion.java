@@ -183,4 +183,9 @@ public class EntityWheatMinion implements EntityMinion {
     public void updateLevel(Double level) {
 
     }
+
+    @Override
+    public String getStatus() {
+        return "";
+    }
 }

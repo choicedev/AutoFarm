@@ -8,8 +8,8 @@
 Prefix: '&8[&c${project.name}&8]&7 '
 
 databaseSettings:
-  url: 'jdbc:mysql://localhost:3306/farm_db'
-  username: 'root'
+  url: jdbc:mysql://localhost:3306/farm_db
+  username: root
   password: ''
 
 # -------------------------------------------------------------------------------------------------
@@ -21,15 +21,23 @@ databaseSettings:
 # -------------------------------------------------------------------------------------------------
 FarmSettings:
   STONE:
-    name: '<#ed9e00>Farm <bold><#009999>STONE</#009999></bold>'
-    head-skin: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTUwM2MwMDg5MDMyNjYwNTA2N2ZmMTZmZmZiYzJkMDUwMjI1MWIzNjgwYzFhY2MxZDY4Y2QzZDA2NGQwNTc3In19fQ=='
+    name-item: '&e&lFarm &4&lSTONE'
+    name-hologram:
+      - '{name}'
+      - '{amount}'
+      - '{status}'
+    head-skin: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTUwM2MwMDg5MDMyNjYwNTA2N2ZmMTZmZmZiYzJkMDUwMjI1MWIzNjgwYzFhY2MxZDY4Y2QzZDA2NGQwNTc3In19fQ==
     hand-item-nbt: '{Unbreakable:1,Enchantments:[{id:channeling,lvl:1},{id:vanishing_curse,lvl:1},{id:efficiency,lvl:7},{id:fire_aspect,lvl:4},{id:fire_protection,lvl:5},{id:flame,lvl:1},{id:unbreaking,lvl:7}]}'
     armor-nbt: '{Trim:{pattern:coast,material:lapis},display:{color:4673362}}'
     distance: 2
     allow_vertical: false
   WHEAT:
-    name: '#ed9e00Farm #009999WHEAT</#009999>'
-    head-skin: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjMyNTQ1YTk4OTdjNGYwODA5ZDdlOWQ3ZGU0YjQ5OWNhZmQ4ZDZhNDJhMGVhY2Y0Y2FhYmYzNDg4YWRjYTIxMSJ9fX0='
+    name-item: '&e&lFarm &4&lWHEAT'
+    name-hologram:
+      - '{name}'
+      - '{amount}'
+      - '{status}'
+    head-skin: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjMyNTQ1YTk4OTdjNGYwODA5ZDdlOWQ3ZGU0YjQ5OWNhZmQ4ZDZhNDJhMGVhY2Y0Y2FhYmYzNDg4YWRjYTIxMSJ9fX0=
     hand-item-nbt: '{Unbreakable:1,Enchantments:[{id:channeling,lvl:1},{id:vanishing_curse,lvl:1},{id:efficiency,lvl:7},{id:fire_aspect,lvl:4},{id:fire_protection,lvl:5},{id:flame,lvl:1},{id:unbreaking,lvl:7}]}'
     armor-nbt: '{Trim:{pattern:coast,material:lapis},display:{color:4673362}}'
     distance: 2

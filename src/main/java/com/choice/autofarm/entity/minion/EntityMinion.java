@@ -31,4 +31,6 @@ public interface EntityMinion {
 
     Double getLevel();
     void updateLevel(Double level);
+
+    String getStatus();
 }

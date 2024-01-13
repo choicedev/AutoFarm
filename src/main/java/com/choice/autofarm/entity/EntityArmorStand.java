@@ -70,7 +70,7 @@ public class EntityArmorStand {
     }
 
     public void createHologram(){
-        minionHologram = new MinionHologram(String.valueOf(entityMinion.getUUID()), entityMinion.getDisplayName());
+        minionHologram = new MinionHologram(String.valueOf(entityMinion.getUUID()));
         minionHologram.createHologramName(spawnLocation, entityMinion.getAmount());
     }
     private void addEquipment() {

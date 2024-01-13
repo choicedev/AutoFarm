@@ -1,9 +1,10 @@
 package com.choice.autofarm.config;
 
-import org.mineacademy.fo.plugin.SimplePlugin;
 import org.mineacademy.fo.settings.SimpleSettings;
 
-import static com.choice.autofarm.util.SettingsConstants.*;
+import java.util.List;
+
+import static com.choice.autofarm.config.util.SettingsConstants.*;
 
 public class Settings extends SimpleSettings {
 
@@ -21,6 +22,7 @@ public class Settings extends SimpleSettings {
 
         public static class StoneSettings {
             public static String STONE_NAME;
+            public static List<String> STONE_NAME_HOLOGRAM;
             public static Integer STONE_DISTANCE;
             public static String STONE_SKIN;
             public static String STONE_ARMOR_NBT;
@@ -35,11 +37,13 @@ public class Settings extends SimpleSettings {
                 STONE_ARMOR_NBT = getString(ARMOR_NBT);
                 STONE_HAND_ITEM_NBT = getString(HAND_ITEM_NBT);
                 STONE_ALLOW_VERTICAL = getBoolean(ALLOW_VERTICAL);
+                STONE_NAME_HOLOGRAM = getStringList(FARM_NAME_HOLOGRAM);
             }
         }
 
         public static class WheatSettings {
             public static String  WHEAT_NAME;
+            public static List<String>  WHEAT_NAME_HOLOGRAM;
             public static Integer WHEAT_DISTANCE;
             public static String  WHEAT_SKIN;
             public static Boolean WHEAT_ALLOW_VERTICAL;
@@ -54,6 +58,8 @@ public class Settings extends SimpleSettings {
                 WHEAT_ARMOR_NBT = getString(ARMOR_NBT);
                 WHEAT_HAND_ITEM_NBT = getString(HAND_ITEM_NBT);
                 WHEAT_ALLOW_VERTICAL = getBoolean(ALLOW_VERTICAL);
+                WHEAT_NAME_HOLOGRAM = getStringList(FARM_NAME_HOLOGRAM);
+
             }
         }
 
